@@ -1,0 +1,88 @@
+# 开发环境配置
+server:
+  # 服务器的HTTP端口，默认为80
+  port: 80
+  servlet:
+    # 应用的访问路径
+    context-path: /api
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+  undertow:
+    # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程 不要设置过大，如果过大，启动项目会报错：打开文件数过多
+    # 阻塞任务线程池, 当执行类似servlet请求阻塞IO操作, undertow会从这个线程池中取得线程 它的值设置取决于系统线程执行任务的阻塞系数，默认值是IO线程数*8
+    # 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理 每块buffer的空间大小,越小的空间被利用越充分，不要设置太大，以免影响其他应用，合适即可
+    buffer-size: 1024
+    # 是否分配的直接内存(NIO直接分配的堆外内存)
+    direct-buffers: true
+    threads:
+      io: 16
+      worker: 256
+  tomcat:
+    uri-encoding: UTF-8
+
+# Spring配置
+spring:
+  # datasource config
+  datasource:
+    url: jdbc:mysql://localhost:3306/article?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+
+  #  # 模板引擎
+  #  thymeleaf:
+  #    mode: HTML
+  #    encoding: utf-8
+  #    # 禁用缓存
+  #    cache: false
+
+  # 文件上传
+  servlet:
+    multipart:
+      # 单个文件大小
+      max-file-size:  100MB
+      # 设置总上传的文件大小
+      max-request-size:  100MB
+
+  #静态资源配置
+  resources:
+    static-locations: classpath:static/,file:${jar.fileUrl}
+
+ #mvc配置
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+
+  # 服务模块
+  devtools:
+    restart:
+      # 热部署开关
+      enabled: true
+
+# mybatis config
+mybatis-plus:
+  configuration:
+    cache-enabled: false
+    default-executor-type: reuse
+    jdbc-type-for-null: 'null'
+    lazy-loading-enabled: true
+    local-cache-scope: session
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.yuanma.shoppingmallapi.dao
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      insert-strategy: not_null
+      update-strategy: not_null
+      select-strategy: not_empty
+
+jar:
+  fileUrl: C:/article/
